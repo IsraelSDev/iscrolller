@@ -7,14 +7,14 @@ const inter = Inter({ subsets: ['latin'], display: 'swap' });
 export const metadata: Metadata = {
   metadataBase: new URL('https://iscrolller.com'),
   title: { default: 'iscrolller', template: '%s · iscrolller' },
-  description: 'Role infinitamente por imagens e vídeos em HD, organizados por tema.',
+  description: 'Endless scrolling through HD images and videos, organized by topic.',
   applicationName: 'iscrolller',
   openGraph: {
     type: 'website',
     siteName: 'iscrolller',
     url: 'https://iscrolller.com',
     title: 'iscrolller',
-    description: 'Role infinitamente por imagens e vídeos em HD, organizados por tema.',
+    description: 'Endless scrolling through HD images and videos, organized by topic.',
   },
 };
 
@@ -25,7 +25,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={inter.className}>
+    <html lang="en" className={inter.className}>
       <body>{children}</body>
     </html>
   );

@@ -24,7 +24,7 @@ export default function MediaCard({ item, priority, onOpen }: Props) {
         onClick={onOpen}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
-        aria-label={`Abrir ${item.title}`}
+        aria-label={`Open ${item.title}`}
       >
         {/* Provedores já entregam miniaturas redimensionadas: carrega direto do CDN, sem proxy. */}
         <Image

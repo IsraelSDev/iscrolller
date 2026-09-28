@@ -1,22 +1,36 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { MediaItem } from '@/lib/types';
 
 type Props = {
   item: MediaItem;
+  position: string; // ex.: "3 / 48"
   onClose: () => void;
   onPrev?: () => void;
   onNext?: () => void;
 };
 
-export default function Lightbox({ item, onClose, onPrev, onNext }: Props) {
+const WHEEL_COOLDOWN_MS = 450;
+const SWIPE_MIN_PX = 50;
+
+// Visualizador vertical: ↑/↓ (ou ←/→), roda do mouse e swipe trocam de item;
+// vídeo avança sozinho ao terminar.
+export default function Lightbox({ item, position, onClose, onPrev, onNext }: Props) {
+  const lastWheel = useRef(0);
+  const touchY = useRef<number | null>(null);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
-      else if (e.key === 'ArrowLeft') onPrev?.();
-      else if (e.key === 'ArrowRight') onNext?.();
+      else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        onPrev?.();
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        onNext?.();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -31,42 +45,67 @@ export default function Lightbox({ item, onClose, onPrev, onNext }: Props) {
     };
   }, []);
 
+  const onWheel = (e: React.WheelEvent) => {
+    if (Math.abs(e.deltaY) < 20) return;
+    const now = Date.now();
+    if (now - lastWheel.current < WHEEL_COOLDOWN_MS) return;
+    lastWheel.current = now;
+    if (e.deltaY > 0) onNext?.();
+    else onPrev?.();
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchY.current === null) return;
+    const dy = touchY.current - e.changedTouches[0].clientY;
+    touchY.current = null;
+    if (dy > SWIPE_MIN_PX) onNext?.();
+    else if (dy < -SWIPE_MIN_PX) onPrev?.();
+  };
+
+  const stop = (fn?: () => void) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    fn?.();
+  };
+
   return (
-    <div className="overlay lightbox" onClick={onClose} role="dialog" aria-modal="true" aria-label={item.title}>
-      <button type="button" className="lb-close" onClick={onClose} aria-label="Fechar">
+    <div
+      className="overlay lightbox"
+      onClick={onClose}
+      onWheel={onWheel}
+      onTouchStart={(e) => (touchY.current = e.touches[0].clientY)}
+      onTouchEnd={onTouchEnd}
+      role="dialog"
+      aria-modal="true"
+      aria-label={item.title}
+    >
+      <button type="button" className="lb-close" onClick={onClose} aria-label="Close">
         ✕
       </button>
 
-      {onPrev && (
-        <button
-          type="button"
-          className="lb-nav prev"
-          onClick={(e) => {
-            e.stopPropagation();
-            onPrev();
-          }}
-          aria-label="Anterior"
-        >
-          ‹
+      <div className="lb-rail" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="lb-nav" onClick={stop(onPrev)} disabled={!onPrev} aria-label="Previous">
+          ▲
         </button>
-      )}
+        <span className="lb-pos">{position}</span>
+        <button type="button" className="lb-nav" onClick={stop(onNext)} disabled={!onNext} aria-label="Next">
+          ▼
+        </button>
+      </div>
 
-      <div className="lb-content" onClick={(e) => e.stopPropagation()}>
+      <div key={item.id} className="lb-content" onClick={(e) => e.stopPropagation()}>
         {item.type === 'video' && item.video ? (
           <video
-            key={item.id}
             src={item.video}
             poster={item.full}
             controls
             autoPlay
-            loop
             playsInline
+            onEnded={() => onNext?.()}
             className="lb-media"
           />
         ) : item.type === 'embed' && item.embed ? (
           // Player oficial do provedor. Sandbox sem allow-popups/top-navigation bloqueia pop-ups de anúncio.
           <iframe
-            key={item.id}
             src={item.embed}
             title={item.title}
             className="lb-embed"
@@ -77,7 +116,6 @@ export default function Lightbox({ item, onClose, onPrev, onNext }: Props) {
           />
         ) : (
           <Image
-            key={item.id}
             src={item.full}
             alt={item.title}
             width={item.width}
@@ -95,25 +133,15 @@ export default function Lightbox({ item, onClose, onPrev, onNext }: Props) {
             {item.duration ? ` · ${item.duration}` : ''}
             {item.isAdult ? ' · NSFW' : ''}
           </span>
-          <a href={item.link} target="_blank" rel="noopener noreferrer nofollow" className="lb-link">
-            Ver original ↗
-          </a>
+          {item.link && (
+            <a href={item.link} target="_blank" rel="noopener noreferrer nofollow" className="lb-link">
+              View original ↗
+            </a>
+          )}
         </div>
       </div>
 
-      {onNext && (
-        <button
-          type="button"
-          className="lb-nav next"
-          onClick={(e) => {
-            e.stopPropagation();
-            onNext();
-          }}
-          aria-label="Próximo"
-        >
-          ›
-        </button>
-      )}
+      <p className="lb-hint" aria-hidden="true">↑ ↓ to navigate · Esc to close</p>
     </div>
   );
 }

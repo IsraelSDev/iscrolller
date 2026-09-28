@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import Header from '@/components/Header';
 import CategoryChips from '@/components/CategoryChips';
 import Feed from '@/components/Feed';
+import FeedbackButton from '@/components/FeedbackButton';
 import { findCategory, visibleCategories } from '@/lib/categories';
 import { ProviderConfigError, fetchContent } from '@/lib/content';
 import { isNsfwEnabled, readNsfwPreference } from '@/lib/nsfw';
@@ -36,7 +37,7 @@ export default async function Home({ searchParams }: Props) {
     error =
       err instanceof ProviderConfigError
         ? err.message
-        : 'Não foi possível carregar o conteúdo agora. Tente novamente em instantes.';
+        : 'Could not load content right now. Please try again shortly.';
   }
 
   return (
@@ -61,18 +62,19 @@ export default async function Home({ searchParams }: Props) {
       <footer className="site-footer">
         {nsfw ? (
           <>
-            Conteúdo via{' '}
+            Content via{' '}
             <a href="https://www.redgifs.com" target="_blank" rel="noopener noreferrer nofollow">RedGIFs</a>
-            {' '}e{' '}
+            {' '}and{' '}
             <a href="https://www.eporner.com" target="_blank" rel="noopener noreferrer nofollow">Eporner</a>
           </>
         ) : (
           <>
-            Fotos fornecidas por{' '}
+            Photos provided by{' '}
             <a href="https://www.pexels.com" target="_blank" rel="noopener noreferrer">Pexels</a>
           </>
         )}
       </footer>
+      <FeedbackButton />
     </>
   );
 }

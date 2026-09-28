@@ -26,17 +26,16 @@ export default function AgeGate({ onConfirm, onCancel }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="dialog-badge">18+</div>
-        <h2 id="age-title">Conteúdo adulto</h2>
+        <h2 id="age-title">Adult content</h2>
         <p>
-          Este conteúdo é destinado apenas a maiores de 18 anos. Você confirma que tem 18 anos ou
-          mais?
+          This content is intended for adults only. Please confirm you are 18 years of age or older.
         </p>
         <div className="dialog-actions">
           <button type="button" className="btn ghost" onClick={onCancel}>
-            Cancelar
+            Cancel
           </button>
           <button type="button" className="btn primary" ref={confirmRef} onClick={onConfirm}>
-            Tenho 18+
+            I'm 18+
           </button>
         </div>
       </div>

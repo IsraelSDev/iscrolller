@@ -22,7 +22,7 @@ export default function Header({ nsfwAllowed, nsfw, query }: Props) {
 
   return (
     <header className="topbar">
-      <Link className="brand" href="/" aria-label="iscrolller - início">
+      <Link className="brand" href="/" aria-label="iscrolller - home">
         <span className="brand-mark" aria-hidden="true">i</span>
         <span className="brand-name">
           scrolller<span className="brand-dim">.com</span>

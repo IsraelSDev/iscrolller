@@ -21,12 +21,12 @@ type PexelsResponse = { photos: PexelsPhoto[]; next_page?: string };
 
 export async function fetchPexels({ query, page, perPage }: { query: string; page: number; perPage: number }) {
   const key = process.env.PEXELS_API_KEY;
-  if (!key) throw new ProviderConfigError('Defina PEXELS_API_KEY em .env.local (chave gratuita em pexels.com/api).');
+  if (!key) throw new ProviderConfigError('Set PEXELS_API_KEY in .env.local (free key at pexels.com/api).');
 
   const params = new URLSearchParams({ page: String(page), per_page: String(perPage) });
   if (query) {
     params.set('query', query);
-    params.set('locale', 'pt-BR');
+    params.set('locale', 'en-US');
   }
   const url = `${API}/${query ? 'search' : 'curated'}?${params}`;
 
@@ -49,7 +49,7 @@ export async function fetchPexels({ query, page, perPage }: { query: string; pag
       {
         id: `px_${p.id}`,
         type: 'image',
-        title: p.alt?.trim() || `Foto de ${p.photographer}`,
+        title: p.alt?.trim() || `Photo by ${p.photographer}`,
         credit: `📷 ${p.photographer} · Pexels`,
         link: p.url,
         isAdult: false,

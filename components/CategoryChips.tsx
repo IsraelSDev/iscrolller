@@ -13,10 +13,10 @@ function hrefFor(slug: string, query: string) {
 }
 
 export default function CategoryChips({ categories, active, query }: Props) {
-  const all: Pick<Category, 'slug' | 'name' | 'nsfw'> = { slug: 'all', name: 'Tudo', nsfw: false };
+  const all: Pick<Category, 'slug' | 'name' | 'nsfw'> = { slug: 'all', name: 'All', nsfw: false };
 
   return (
-    <nav className="chips" aria-label="Categorias">
+    <nav className="chips" aria-label="Categories">
       {[all, ...categories].map((c) => (
         <Link
           key={c.slug}

@@ -19,13 +19,13 @@ export async function GET(request: NextRequest) {
 
   // Categoria precisa bater com o modo: NSFW ligado = só adulto; desligado = só SFW.
   if (slug !== 'all' && (!category || category.nsfw !== includeAdult)) {
-    return NextResponse.json({ error: 'Categoria inválida.' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid category.' }, { status: 400 });
   }
   if (query.length > MAX_QUERY_LENGTH) {
-    return NextResponse.json({ error: 'Busca muito longa.' }, { status: 400 });
+    return NextResponse.json({ error: 'Search query too long.' }, { status: 400 });
   }
   if (!Number.isInteger(page) || page < 1 || page > MAX_PAGE) {
-    return NextResponse.json({ error: 'Cursor inválido.' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid cursor.' }, { status: 400 });
   }
 
   try {
@@ -34,9 +34,9 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     console.error('[api/content]', err);
     if (err instanceof ProviderConfigError) {
-      return NextResponse.json({ error: 'Provedor de conteúdo não configurado.' }, { status: 503 });
+      return NextResponse.json({ error: 'Content provider not configured.' }, { status: 503 });
     }
     const status = err instanceof ProviderApiError && err.status === 429 ? 429 : 502;
-    return NextResponse.json({ error: 'Falha ao buscar conteúdo.' }, { status });
+    return NextResponse.json({ error: 'Failed to fetch content.' }, { status });
   }
 }

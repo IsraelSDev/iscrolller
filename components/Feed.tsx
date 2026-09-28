@@ -89,7 +89,15 @@ export default function Feed({ category, query, initialItems, initialAfter }: Pr
   const lanes = useMemo(() => distribute(items, columns), [items, columns]);
   const close = useCallback(() => setOpenIndex(null), []);
   const prev = useCallback(() => setOpenIndex((i) => (i === null ? i : i - 1)), []);
-  const next = useCallback(() => setOpenIndex((i) => (i === null ? i : i + 1)), []);
+  const next = useCallback(
+    () => setOpenIndex((i) => (i === null || i >= items.length - 1 ? i : i + 1)),
+    [items.length]
+  );
+
+  // No visualizador, busca a próxima página antes de chegar ao último item.
+  useEffect(() => {
+    if (openIndex !== null && openIndex >= items.length - 3 && hasMore && status === 'idle') loadMore();
+  }, [openIndex, items.length, hasMore, status, loadMore]);
 
   // Só mostra "vazio" quando não há mais o que buscar (uma página pode vir sem mídia).
   if (items.length === 0 && !hasMore) {
@@ -97,10 +105,10 @@ export default function Feed({ category, query, initialItems, initialAfter }: Pr
       <p className="empty">
         {query ? (
           <>
-            Nenhum resultado para <strong>“{query}”</strong>.
+            No results for <strong>“{query}”</strong>.
           </>
         ) : (
-          'Nada por aqui ainda.'
+          'Nothing here yet.'
         )}
       </p>
     );
@@ -126,18 +134,19 @@ export default function Feed({ category, query, initialItems, initialAfter }: Pr
       </div>
 
       <div ref={sentinelRef} className="loader" aria-live="polite">
-        {status === 'loading' && <span className="spinner" aria-label="Carregando" />}
+        {status === 'loading' && <span className="spinner" aria-label="Loading" />}
         {status === 'error' && (
           <button type="button" className="btn primary" onClick={loadMore}>
-            Erro ao carregar. Tentar novamente
+            Failed to load. Try again
           </button>
         )}
-        {status === 'idle' && !hasMore && <span className="end">Você chegou ao fim ✨</span>}
+        {status === 'idle' && !hasMore && <span className="end">You've reached the end ✨</span>}
       </div>
 
       {current && openIndex !== null && (
         <Lightbox
           item={current}
+          position={`${openIndex + 1} / ${items.length}${hasMore ? '+' : ''}`}
           onClose={close}
           onPrev={openIndex > 0 ? prev : undefined}
           onNext={openIndex < items.length - 1 ? next : undefined}

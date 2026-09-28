@@ -65,14 +65,14 @@ export default function SearchBar({ query }: { query: string }) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => e.key === 'Escape' && setValue('')}
-        placeholder="Pesquisar conteúdo…"
-        aria-label="Pesquisar conteúdo"
+        placeholder="Search content…"
+        aria-label="Search content"
         maxLength={MAX_QUERY_LENGTH}
         autoComplete="off"
         spellCheck={false}
       />
       {value ? (
-        <button type="button" className="search-clear" onClick={() => setValue('')} aria-label="Limpar busca">
+        <button type="button" className="search-clear" onClick={() => setValue('')} aria-label="Clear search">
           ✕
         </button>
       ) : (

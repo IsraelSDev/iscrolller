@@ -82,7 +82,7 @@ export async function fetchRedgifs({
       id: `rg_${g.id}`,
       title: g.description?.trim() || g.tags?.slice(0, 3).join(' · ') || 'RedGIFs',
       credit: g.userName ? `@${g.userName} · RedGIFs` : 'RedGIFs',
-      link: `https://www.redgifs.com/watch/${encodeURIComponent(g.id)}`,
+      link: null, // sem link externo para o RedGIFs
       isAdult: true,
       width: g.width,
       height: g.height,

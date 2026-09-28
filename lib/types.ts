@@ -12,7 +12,7 @@ export type MediaItem = {
   type: 'image' | 'video' | 'embed'; // embed = player em iframe (Eporner)
   title: string;
   credit: string;          // autor / fonte exibida no card
-  link: string;            // página original no provedor
+  link: string | null;     // página original no provedor (null = sem link)
   isAdult: boolean;
   width: number;
   height: number;
